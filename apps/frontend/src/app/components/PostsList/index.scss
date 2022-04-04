@@ -1,0 +1,104 @@
+.posts_wrapper {
+  margin-top: 20px;
+}
+
+.card {
+  border: 3px solid #dedede;
+  margin: 20px auto;
+  &_header {
+    display: flex;
+    width: 100%;
+    height: 50px;
+    padding-left: 2px;
+    justify-content: space-between;
+    .test:after {
+      content: '\2807';
+      font-size: 20px;
+    }
+    &_logo {
+      display: flex;
+      width: 14%;
+      align-items: center;
+      //   width: 42px;
+      h4 {
+        padding-left: 5px;
+      }
+      img {
+        width: 100%;
+        border-radius: 50%;
+        padding: 2px;
+        border: 3px solid #f99c58;
+      }
+    }
+  }
+  &_footer {
+    display: flex;
+    border-top: 3px solid #dedede;
+    height: 40px;
+    margin: 10px auto;
+    justify-content: space-between;
+    &_icon {
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      margin: 4px;
+      align-self: center;
+    }
+    &_commentinput {
+      height: 40px;
+      width: 100%;
+      input {
+        height: 100%;
+        border: none;
+        width: 100%;
+        outline: none;
+      }
+    }
+    &_action {
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      margin-right: 5px;
+      align-self: center;
+      a {
+        text-decoration: none;
+        color: #2ca7f6;
+      }
+    }
+  }
+  &_image {
+    width: 614px;
+    padding-top: 5px;
+    // height: 352px;
+    img {
+      width: 100%;
+    }
+  }
+  &_content {
+    &_actions {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      &_left {
+        display: flex;
+        justify-content: space-around;
+        width: 20%;
+      }
+      &_right {
+      }
+    }
+  }
+  &_description {
+    margin: 10px 0;
+    &_likecount {
+    }
+    &_tags {
+    }
+    &_commentdetails {
+    }
+  }
+  &_more {
+    display: flex;
+    align-self: center;
+  }
+}
