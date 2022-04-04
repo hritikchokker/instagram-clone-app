@@ -10,6 +10,6 @@ function PostsList() {
       ))}
     </div>
   );
-}
+};
 
 export default PostsList;

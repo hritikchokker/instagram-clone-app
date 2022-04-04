@@ -134,6 +134,6 @@ function PostCard() {
       </div>
     </div>
   );
-}
+};
 
 export default React.memo(PostCard);
