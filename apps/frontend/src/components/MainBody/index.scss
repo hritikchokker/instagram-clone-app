@@ -1,0 +1,13 @@
+.body_base {
+  display: flex;
+  margin: 30px;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  flex-flow: row nowrap;
+
+  &_container {
+    display: flex;
+    width: 935px;
+  }
+}

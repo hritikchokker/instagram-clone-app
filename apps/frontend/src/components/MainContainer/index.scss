@@ -1,0 +1,53 @@
+$border-color: linear-gradient(
+  90deg,
+  rgba(253, 89, 73, 1) 30%,
+  rgba(214, 52, 151, 1) 50%,
+  rgba(40, 90, 235, 1) 90%
+);
+
+.main_base {
+  border-radius: 3px;
+  margin-top: 0;
+  height: 100vh;
+  max-width: 614px;
+  width: 100%;
+
+  &_reels_base {
+    display: flex;
+    margin: 0 auto;
+    padding: 16px 0;
+    border: 1px solid rgba(219, 219, 219);
+    border-radius: 3px;
+    padding: 16px 10px;
+
+    &_container {
+      display: flex;
+      cursor: pointer;
+      align-self: center;
+      width: 80px;
+      height: 90px;
+      &_content {
+        border: 2px solid rgba(236, 86, 179, 0.897);
+        border-radius: 50%;
+        width: 66px;
+        height: 66px;
+      }
+    }
+  }
+}
+
+.Image_container {
+  width: 56px;
+  height: 56px;
+  // overflow: hidden;
+  &_content {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+  }
+  &_text {
+    letter-spacing: 0.01em;
+    max-width: 74px;
+    overflow: hidden;
+  }
+}

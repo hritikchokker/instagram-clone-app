@@ -1,0 +1,65 @@
+@mixin df {
+  display: flex;
+}
+
+.head_base {
+  @include df;
+  margin: 0 auto;
+  width: 100%;
+  // position: fixed;
+  justify-content: center;
+  top: 0;
+  height: 50px;
+  border-bottom: 1px solid rgba(219, 219, 219);
+
+  &_content {
+    @include df;
+    max-width: 975px;
+    padding: 0 20px;
+    width: 100%;
+    justify-content: space-evenly;
+    flex-direction: row;
+    align-items: center;
+
+    &_logo {
+      width: 34%;
+    }
+
+    &_search {
+      padding: 0 10px;
+      display: flex;
+      flex-direction: row;
+      &_bar {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        border: 1px rgb(138, 136, 136);
+        position: relative;
+        border-radius: 8px;
+        padding: 9px 20px;
+        line-height: 25px;
+        background: rgba(239, 239, 239);
+        &_icon {
+          position: absolute;
+          top: 23px;
+        }
+        &_text {
+          display: inline-block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    &_nav_Icons {
+      @include df;
+      justify-content: flex-end;
+      width: 25%;
+
+      &_content:not(:first-child) {
+        margin-left: 22px;
+      }
+    }
+  }
+}

@@ -1,4 +1,12 @@
+import MainHead from '../components/MainHead';
+import MainBody from '../components/MainBody';
+
 export function App() {
-  return <h1>Instagram Clone App</h1>;
+  return (
+    <>
+      <MainHead />
+      <MainBody />
+    </>
+  );
 }
 export default App;
