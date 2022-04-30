@@ -2,22 +2,28 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  */
-
-import * as express from 'express';
-
-const app = express();
-
-app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to api!' });
-});
-app.all('*', (_, res) => {
-  res.send(
-    `<h1 style="text-align:center; margin-top:200px;">Instagram app clone APIs,<br> Hello world</h1>`
-  );
-});
-
+import { app } from './app/app';
+import { Database } from './app/utils/Database';
+import { Logger } from './app/utils/Logging';
 const port = process.env.port || 3333;
+const logger = new Logger();
 const server = app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}/api`);
+  logger.success(`*****************Listening at http://localhost:${port}/api***************`);
 });
-server.on('error', console.error);
+
+const makeDbConnection = async () => {
+  try {
+    const db = new Database();
+    await db.connectToDb();
+    await db.syncToDb();
+    logger.success('*****************connected to db successfully****************');
+  } catch (error) {
+    //
+  }
+};
+
+makeDbConnection();
+server.on('error', logger.error);
+server.on('error', () => {
+  process.exit();
+});
