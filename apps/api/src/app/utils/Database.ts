@@ -9,6 +9,7 @@ export class Database {
         dialect: 'postgres',
         logging: console.log,
       });
+
       this.sequeLizeInstance = sequelize;
       return sequelize;
     } catch (error) {
@@ -24,5 +25,19 @@ export class Database {
     } catch (e) {
       console.log('failed to sync');
     }
+  }
+
+  addModels(arr: Array<{ modelName: string; modelValue: unknown }>): void {
+    arr.forEach((model) => {
+      this.addModel(model.modelName, model.modelValue);
+    });
+  }
+
+  private addModel(modelName, model: any): void {
+    this.sequeLizeInstance.define(modelName, model);
+  }
+
+  showAllModels(): void {
+    console.log(this.sequeLizeInstance.models, '******** ALL Models');
   }
 }

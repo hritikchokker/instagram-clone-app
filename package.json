@@ -15,7 +15,9 @@
     "axios": "^0.26.1",
     "chalk": "^5.0.1",
     "core-js": "^3.6.5",
+    "cors": "^2.8.5",
     "express": "4.17.2",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
     "react": "17.0.2",
@@ -27,7 +29,8 @@
     "regenerator-runtime": "0.13.7",
     "rxjs": "^7.0.0",
     "sequelize": "^6.17.0",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@nestjs/schematics": "^8.0.0",
@@ -45,6 +48,7 @@
     "@nrwl/workspace": "13.9.4",
     "@testing-library/react": "12.1.4",
     "@testing-library/react-hooks": "7.0.2",
+    "@types/cors": "^2.8.12",
     "@types/express": "4.17.13",
     "@types/jest": "27.0.2",
     "@types/node": "16.11.7",
