@@ -1,6 +1,20 @@
 .profile_base {
-  border: 1px solid #dbdbdb;
-  // background-color: burlywood;
+  display: flex;
   max-width: 293px;
   width: 100%;
+  justify-content: center;
+  &_container {
+    display: flex;
+    width: 80%;
+    &_logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+    }
+
+    &_text {
+      margin-left: 12px;
+      font-weight: 400;
+    }
+  }
 }

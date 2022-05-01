@@ -26,28 +26,33 @@
     }
 
     &_search {
-      padding: 0 10px;
+      padding: 0 12px;
       display: flex;
       flex-direction: row;
+      height: 36px;
+      min-width: 125px;
+      width: 268px;
+      position: relative;
       &_bar {
         display: flex;
         flex-direction: row;
         width: 100%;
         border: 1px rgb(138, 136, 136);
-        position: relative;
         border-radius: 8px;
         padding: 9px 20px;
         line-height: 25px;
         background: rgba(239, 239, 239);
         &_icon {
           position: absolute;
-          top: 23px;
+          left: 22px;
+          top: 12px;
         }
         &_text {
+          position: absolute;
           display: inline-block;
           overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+          left: 45px;
+          top: 12px;
         }
       }
     }
@@ -55,11 +60,17 @@
     &_nav_Icons {
       @include df;
       justify-content: flex-end;
-      width: 25%;
+      width: 28%;
 
       &_content:not(:first-child) {
         margin-left: 22px;
       }
     }
   }
+}
+
+.logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
 }

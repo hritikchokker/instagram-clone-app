@@ -1,6 +1,7 @@
 import React from 'react';
 import './index.scss';
 import logo from '../../assets/Instagram.png';
+import profile from '../../assets/profile_pic.jpg';
 
 function index() {
   return (
@@ -190,11 +191,9 @@ function index() {
               </svg>
             </a>
           </div>
-          {/* <div>
-            <span>
-              <img />
-            </span>
-          </div> */}
+          <div className="head_base_content_nav_Icons_content">
+            <img src={profile} alt="" className="logo" />
+          </div>
         </div>
       </div>
     </div>
