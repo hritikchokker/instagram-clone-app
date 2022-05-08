@@ -1,13 +1,12 @@
-import { DataTypes } from 'sequelize';
-import { v4 as uuidv4 } from 'uuid';
-export const UserModel = (sequelize) => {
+import { DataTypes, Sequelize } from 'sequelize';
+
+export const UserModel = (sequelize: Sequelize) => {
   return sequelize.define(
     'user',
     {
       userId: {
         type: DataTypes.UUID,
-        unique: true,
-        defaultValue: uuidv4(),
+        primaryKey: true,
       },
       email: {
         type: DataTypes.STRING,
@@ -56,6 +55,8 @@ export const UserModel = (sequelize) => {
     },
     {
       timestamps: true,
+      freezeTableName: true,
+      modelName: 'User',
     }
   );
 };

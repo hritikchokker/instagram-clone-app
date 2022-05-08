@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize';
+import { UserModel, SessionModel } from '../models';
 
 export class Database {
   sequeLizeInstance: Sequelize;
@@ -9,8 +10,9 @@ export class Database {
         dialect: 'postgres',
         logging: console.log,
       });
-
       this.sequeLizeInstance = sequelize;
+      this.sequeLizeInstance.models['user'] = UserModel(sequelize);
+      this.sequeLizeInstance.models['sessionHistory'] = SessionModel(sequelize);
       return sequelize;
     } catch (error) {
       Promise.reject(error);
@@ -27,6 +29,14 @@ export class Database {
     }
   }
 
+  async syncAllModels() {
+    const promiseModel = [];
+    Object.keys(this.sequeLizeInstance.models).forEach((model) => {
+      promiseModel.push(this.sequeLizeInstance.models[model].sync());
+    });
+    await Promise.all(promiseModel);
+  }
+
   addModels(arr: Array<{ modelName: string; modelValue: unknown }>): void {
     arr.forEach((model) => {
       this.addModel(model.modelName, model.modelValue);
@@ -35,6 +45,21 @@ export class Database {
 
   private addModel(modelName, model: any): void {
     this.sequeLizeInstance.define(modelName, model);
+  }
+  private getModelInstance(modelName: string) {
+    return this.sequeLizeInstance.models[modelName];
+  }
+
+  setAssociation(from: string, to: string): void {
+    /**
+     * @example
+     * from = user
+     * to = sessionHistory
+     * user hasMany sessions
+     */
+    const fromModel = this.getModelInstance(from);
+    const toModel = this.getModelInstance(to);
+    fromModel.hasMany(toModel);
   }
 
   showAllModels(): void {

@@ -2,7 +2,7 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  */
-import { app } from './app/app';
+import { app, updateDatabaseInstance } from './app/app';
 import { Database } from './app/utils/Database';
 import { Logger } from './app/utils/Logging';
 import { APP_MODELS } from './app/modules';
@@ -14,14 +14,14 @@ const server = app.listen(port, () => {
   );
 });
 
-const makeDbConnection = async () => {
+(async function (app) {
   try {
     const db = new Database();
     await db.connectToDb();
     await db.syncToDb();
-    APP_MODELS(db.sequeLizeInstance);
-    (app.request as any).sequelize = db;
-    (app.request as any).Sequelize = db;
+    updateDatabaseInstance(db);
+    // db.setAssociation('user', 'sessionHistory');
+    await db.syncAllModels();
     db.showAllModels();
     logger.success(
       '*****************connected to db successfully****************'
@@ -30,9 +30,7 @@ const makeDbConnection = async () => {
     console.error('********', error, '*********');
     //
   }
-};
-
-makeDbConnection();
+})();
 server.on('error', logger.error);
 server.on('error', () => {
   process.exit();
