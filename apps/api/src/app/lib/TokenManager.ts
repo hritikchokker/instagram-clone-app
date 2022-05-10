@@ -1,4 +1,4 @@
-import { sign, verify } from 'jsonwebtoken';
+import { sign, decode } from 'jsonwebtoken';
 import { JWT_CONFIGS } from '../config';
 export class TokenManager {
   async createToken(payload): Promise<string> {
@@ -8,14 +8,7 @@ export class TokenManager {
     });
     // return new Promise((resolve, reject) => {});
   }
-  decodeToken(token: string): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-      verify(token, (err: unknown, data: unknown) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(data);
-      });
-    });
+  async decodeToken(token: string): Promise<unknown> {
+    return decode(token, { complete: true })?.payload;
   }
 }

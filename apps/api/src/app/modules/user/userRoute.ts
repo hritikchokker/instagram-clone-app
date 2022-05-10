@@ -15,3 +15,5 @@ router.get('/profile', userController.getUserProfile);
 router.get('/list', userController.userList);
 
 router.get('/forgot-password', userController.forgotPassword);
+
+router.get('/logout', userController.logout);

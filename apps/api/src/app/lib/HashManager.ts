@@ -5,7 +5,7 @@ export class HashManager {
   createHashValue(password: string): string {
     return hashSync(password, JWT_CONFIGS.salt);
   }
-  decryptHashValue(val: string): boolean {
-    return compareSync(val, '' + JWT_CONFIGS.salt);
+  decryptHashValue(password: string, hash: string): boolean {
+    return compareSync(password, hash);
   }
 }

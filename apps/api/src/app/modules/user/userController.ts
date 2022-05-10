@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize, Op } from 'sequelize';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { ResponseHandler } from '../../utils/ResponseHandler';
@@ -8,13 +8,29 @@ const tokenService = new TokenManager();
 const hashManager = new HashManager();
 const responseHandler = new ResponseHandler();
 export class UserController {
+  private getModel(sequeLizeInstance: Sequelize, modelName: string) {
+    return sequeLizeInstance.models[modelName];
+  }
+
+  private checkForModel(
+    req: Request & { sequelize: { sequeLizeInstance: Sequelize } },
+    res: Response
+  ) {
+    const { sequeLizeInstance } = req.sequelize;
+    if (!sequeLizeInstance) {
+      return responseHandler.sendResponse(res, 500, {
+        error: 'something went wrong',
+      });
+    }
+    return sequeLizeInstance;
+  }
   async registerUser(
     req: Request & { sequelize: { sequeLizeInstance: Sequelize } },
     res: Response
   ) {
     try {
       const { sequeLizeInstance } = req.sequelize;
-      if (!req?.sequelize) {
+      if (!sequeLizeInstance) {
         return responseHandler.sendResponse(res, 500, {
           error: 'something went wrong',
         });
@@ -58,7 +74,74 @@ export class UserController {
     }
   }
 
-  async loginUser(req: Request & { sequelize: Sequelize }, res: Response) {
+  async loginUser(
+    req: Request & { sequelize: { sequeLizeInstance: Sequelize } },
+    res: Response
+  ) {
+    try {
+      const { sequeLizeInstance } = req.sequelize;
+      if (!sequeLizeInstance) {
+        return responseHandler.sendResponse(res, 500, {
+          error: 'something went wrong',
+        });
+      }
+      const userModel = sequeLizeInstance.models.user;
+      const sessionModel = sequeLizeInstance.models.sessionHistory;
+      const payload = req.body;
+      const previousDetails = await (
+        await userModel.findOne({
+          where: { email: payload.email },
+        })
+      )?.toJSON();
+      if (!previousDetails) {
+        return responseHandler.sendResponse(res, 400, {
+          message: 'user with this email id does not exists',
+        });
+      }
+      const findActiveSession = await (
+        await sessionModel.findOne({
+          where: {
+            [Op.and]: {
+              userId: previousDetails.userId,
+            },
+          },
+        })
+      )?.toJSON();
+      if (findActiveSession) {
+        return responseHandler.sendResponse(res, 401, {
+          message: 'user already loggedin!',
+        });
+      }
+      const passwordCheck = hashManager.decryptHashValue(
+        payload.password,
+        previousDetails.password
+      );
+      if (!passwordCheck) {
+        return responseHandler.sendResponse(res, 400, {
+          message: 'password is not correct',
+        });
+      }
+      const newSession = await sessionModel.create({
+        sessionId: uuidv4(),
+        userId: previousDetails.userId,
+        isActive: true,
+        deviceId: 'fakeDeviceForNow',
+        platform: 'web', //for now
+      });
+      const token = await tokenService.createToken({
+        userId: previousDetails.userId,
+        sessionId: uuidv4(),
+        ...newSession.toJSON(),
+      });
+      return responseHandler.sendResponse(res, 200, {
+        message: 'login success',
+        token: token,
+        ...previousDetails,
+        ...newSession,
+      });
+    } catch (error) {
+      return responseHandler.sendResponse(res, 400, { ...error });
+    }
     // const model = this.getModelFromInstance(req.sequelize);
   }
 
@@ -82,14 +165,66 @@ export class UserController {
         });
       }
       const userModel = sequeLizeInstance.models.user;
+      const sessionModel = sequeLizeInstance.models.sessionHistory;
       const data = await userModel.findAll();
+      const sessionData = await sessionModel.findAll();
       return responseHandler.sendResponse(res, 200, {
         userList: data,
+        sessionData,
       });
     } catch (error) {
       return responseHandler.sendResponse(res, 400, { ...error });
     }
 
     // const model = this.getModelFromInstance(req.sequelize);
+  }
+
+  async logout(
+    req: Request & { sequelize: { sequeLizeInstance: Sequelize } },
+    res
+  ) {
+    try {
+      const { sequeLizeInstance } = req.sequelize;
+      if (!sequeLizeInstance) {
+        return responseHandler.sendResponse(res, 500, {
+          error: 'something went wrong',
+        });
+      }
+      const sessionModel = sequeLizeInstance.models.sessionHistory;
+      if (!req?.headers?.authorization) {
+        return responseHandler.sendResponse(res, 401, {
+          message: 'no auth token found',
+        });
+      }
+      const tokenData: any = await tokenService.decodeToken(
+        req?.headers?.authorization
+      );
+      console.log(tokenData, 'tokendata');
+      const sessionDetails = await (
+        await sessionModel.findOne({
+          where: {
+            [Op.and]: {
+              userId: tokenData.userId,
+              sessionId: tokenData.sessionId,
+            },
+          },
+        })
+      )?.toJSON();
+      if (sessionDetails) {
+        await sessionModel.destroy({
+          where: {
+            [Op.and]: {
+              userId: tokenData.userId,
+              sessionId: tokenData.sessionId,
+            },
+          },
+        });
+      }
+      return responseHandler.sendResponse(res, 200, {
+        message: 'logout succesfully',
+      });
+    } catch (error) {
+      return responseHandler.sendResponse(res, 400, { ...error });
+    }
   }
 }
