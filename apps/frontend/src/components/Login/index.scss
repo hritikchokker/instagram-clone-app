@@ -1,2 +1,109 @@
 .Login_base {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  &__container {
+    display: flex;
+    width: 635px;
+    height: 100vh;
+    align-items: center;
+    // flex-direction: column;
+    &__image {
+      width: 380px;
+      img {
+        width: 100%;
+        height: 450px;
+        margin: 0 auto;
+      }
+    }
+    &__Wrapper {
+      display: flex;
+      flex-direction: column;
+      &__login {
+        display: flex;
+        border: 1px solid rgba(219, 219, 219);
+        width: 350px;
+        height: 370px;
+        flex-direction: column;
+
+        &__logo_container {
+          display: flex;
+          justify-content: center;
+          margin-top: 45px;
+          margin-bottom: 10px;
+          img {
+            width: 155px;
+            height: 40px;
+          }
+        }
+        &_fields {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          input {
+            border: 1px solid rgba(142, 142, 142);
+            margin-top: 10px;
+            height: 36px;
+            width: 258px;
+            padding: 10px;
+            color: rgba(142, 142, 142);
+          }
+          button {
+            margin-top: 10px;
+            border: 1px solid transparent;
+            height: 30px;
+            width: 258px;
+            background-color: rgba(0, 149, 246);
+            opacity: 0.6;
+            border-radius: 4px;
+            color: #ffff;
+            cursor: pointer;
+          }
+          h6 {
+            margin: 15px;
+            color: rgba(142, 142, 142);
+            font-size: 13px;
+          }
+          .login_facebook {
+            color: #385185;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+          }
+          .forgot_password {
+            margin-top: 18px;
+            color: rgba(0, 55, 107);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+          }
+        }
+      }
+      &__signUp {
+        margin-top: 10px;
+        display: flex;
+        border: 1px solid rgba(219, 219, 219);
+        width: 350px;
+        height: 63px;
+        justify-content: center;
+        align-items: center;
+        span {
+          color: rgba(0, 55, 107);
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+.forgot_base {
+  width: 100%;
+  &__container {
+    display: flex;
+    width: 635px;
+    height: 100vh;
+    align-items: center;
+  }
 }

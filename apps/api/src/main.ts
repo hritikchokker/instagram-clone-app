@@ -2,21 +2,38 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  */
-
-import { Logger } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-
-import { AppModule } from './app/app.module';
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3333;
-  await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
+import { app } from './app/app';
+import { Database } from './app/utils/Database';
+import { Logger } from './app/utils/Logging';
+import { APP_MODELS } from './app/modules';
+const port = process.env.port || 3333;
+const logger = new Logger();
+const server = app.listen(port, () => {
+  logger.success(
+    `*****************Listening at http://localhost:${port}/api***************`
   );
-}
+});
 
-bootstrap();
+const makeDbConnection = async () => {
+  try {
+    const db = new Database();
+    await db.connectToDb();
+    await db.syncToDb();
+    APP_MODELS(db.sequeLizeInstance);
+    (app.request as any).sequelize = db;
+    (app.request as any).Sequelize = db;
+    db.showAllModels();
+    logger.success(
+      '*****************connected to db successfully****************'
+    );
+  } catch (error) {
+    console.error('********', error, '*********');
+    //
+  }
+};
+
+makeDbConnection();
+server.on('error', logger.error);
+server.on('error', () => {
+  process.exit();
+});

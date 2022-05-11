@@ -1,8 +1,52 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
 
-// #root{
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     min-height: 100vh;
-// }
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.container-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mlr-auto {
+  margin: 0 auto;
+}
+.w-65 {
+  width: 65%;
+}
+.w-62 {
+  width: 62%;
+}
+
+.w-70 {
+  width: 70%;
+}
+
+.w-60 {
+  width: 61.5%;
+}
+
+.container_sb {
+  display: flex;
+  justify-content: space-between;
+}
+.container_c {
+  display: flex;
+  justify-content: center;
+}
+
+.h-60 {
+  height: 60px;
+}
+
+svg {
+  cursor: pointer;
+}
