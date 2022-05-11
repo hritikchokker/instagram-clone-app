@@ -1,11 +1,15 @@
-import { DataTypes } from 'sequelize';
-
-export const SessionModel = (sequelize) => {
+import { DataTypes, Sequelize } from 'sequelize';
+export const SessionModel = (sequelize: Sequelize) => {
   return sequelize.define(
     'sessionHistory',
     {
       userId: {
         type: DataTypes.UUID,
+        allowNull: false,
+      },
+      sessionId: {
+        type: DataTypes.UUID,
+        primaryKey: true,
         allowNull: false,
       },
       isActive: {
