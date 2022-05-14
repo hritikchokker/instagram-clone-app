@@ -4,9 +4,10 @@ export const UserModel = (sequelize: Sequelize) => {
   return sequelize.define(
     'user',
     {
-      userId: {
+      uid: {
         type: DataTypes.UUID,
         primaryKey: true,
+        allowNull: false,
       },
       email: {
         type: DataTypes.STRING,

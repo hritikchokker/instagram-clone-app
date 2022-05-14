@@ -1,7 +1,3 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
 import { app, updateDatabaseInstance } from './app/app';
 import { Database } from './app/utils/Database';
 import { Logger } from './app/utils/Logging';
@@ -18,10 +14,13 @@ const server = app.listen(port, () => {
   try {
     const db = new Database();
     await db.connectToDb();
+    await db.verifyConnection();
     await db.syncToDb();
     updateDatabaseInstance(db);
-    // db.setAssociation('user', 'sessionHistory');
+    db.setAssociation('user', 'sessionHistory');
+    // await db.dropTable(['sessionHistory']);
     await db.syncAllModels();
+
     db.showAllModels();
     logger.success(
       '*****************connected to db successfully****************'

@@ -57,12 +57,39 @@ export class Database {
      * to = sessionHistory
      * user hasMany sessions
      */
-    const fromModel = this.getModelInstance(from);
-    const toModel = this.getModelInstance(to);
-    fromModel.hasMany(toModel);
+    const fromModel = this.getModelInstance(from); // user
+    const toModel = this.getModelInstance(to); //session
+    console.log(from, 'from', to, 'to');
+    // toModel.belongsTo(fromModel);
+    fromModel.hasMany(toModel, { foreignKey: 'userId' });
+    toModel.belongsTo(fromModel, { foreignKey: 'userId' });
+    // this.sequeLizeInstance.getQueryInterface().addConstraint(from, {
+    //   fields: ['userId'],
+    //   type: 'foreign key',
+    //   name: 'userId',
+    //   references: {
+    //     table: 'sessionHistory',
+    //     field: 'userId',
+    //   },
+    //   onDelete: 'cascade',
+    //   onUpdate: 'cascade',
+    // });
+    // toModel.hasMany(fromModel, {
+    //   foreignKey: 'sessionId',
+    // });
+    // fromModel.belongsTo(toModel, {
+    //   foreignKey: 'sessionId',
+    // });
   }
-
   showAllModels(): void {
     console.log(this.sequeLizeInstance.models, '******** ALL Models');
+  }
+
+  async dropTable(tableNames: Array<string>) {
+    const pr = [];
+    tableNames?.forEach((table) => {
+      pr.push(this.getModelInstance(table).drop());
+    });
+    return Promise.all(pr);
   }
 }

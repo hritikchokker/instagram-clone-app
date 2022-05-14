@@ -46,18 +46,18 @@ export class UserController {
           message: 'user with this email already exists',
         });
       }
-      payload.userId = uuidv4();
+      payload.uid = uuidv4();
       payload.password = hashManager.createHashValue(payload.password);
       const newUser = await (await userModel.create(payload)).toJSON();
       const userSession = await sessionModel.create({
-        userId: newUser.userId,
+        userId: newUser.uid,
         isActive: true,
         sessionId: uuidv4(),
         deviceId: 'fakeDeviceForNow',
         platform: 'web', //for now
       });
       const token = await tokenService.createToken({
-        userId: newUser.userId,
+        uid: newUser.uid,
         sessionId: uuidv4(),
         ...userSession.toJSON(),
       });
@@ -88,6 +88,7 @@ export class UserController {
       const userModel = sequeLizeInstance.models.user;
       const sessionModel = sequeLizeInstance.models.sessionHistory;
       const payload = req.body;
+
       const previousDetails = await (
         await userModel.findOne({
           where: { email: payload.email },
@@ -101,9 +102,9 @@ export class UserController {
       const findActiveSession = await (
         await sessionModel.findOne({
           where: {
-            [Op.and]: {
-              userId: previousDetails.userId,
-            },
+            userId: previousDetails.uid,
+            // uid: previousDetails.userId,
+            isActive: true,
           },
         })
       )?.toJSON();
@@ -123,13 +124,14 @@ export class UserController {
       }
       const newSession = await sessionModel.create({
         sessionId: uuidv4(),
-        userId: previousDetails.userId,
+        userId: previousDetails.uid,
+        // uid: previousDetails.userId,
         isActive: true,
         deviceId: 'fakeDeviceForNow',
         platform: 'web', //for now
       });
       const token = await tokenService.createToken({
-        userId: previousDetails.userId,
+        uid: previousDetails.uid,
         sessionId: uuidv4(),
         ...newSession.toJSON(),
       });
@@ -199,30 +201,17 @@ export class UserController {
       const tokenData: any = await tokenService.decodeToken(
         req?.headers?.authorization
       );
-      console.log(tokenData, 'tokendata');
-      const sessionDetails = await (
-        await sessionModel.findOne({
-          where: {
-            [Op.and]: {
-              userId: tokenData.userId,
-              sessionId: tokenData.sessionId,
-            },
-          },
-        })
-      )?.toJSON();
-      if (sessionDetails) {
-        await sessionModel.destroy({
-          where: {
-            [Op.and]: {
-              userId: tokenData.userId,
-              sessionId: tokenData.sessionId,
-            },
-          },
+      const sessionDetails = await sessionModel.findByPk(tokenData.sessionId);
+      if (sessionDetails?.toJSON()) {
+        await sessionDetails.destroy();
+        return responseHandler.sendResponse(res, 200, {
+          message: 'logout succesfully',
+        });
+      } else {
+        return responseHandler.sendResponse(res, 400, {
+          message: 'user is already logged out',
         });
       }
-      return responseHandler.sendResponse(res, 200, {
-        message: 'logout succesfully',
-      });
     } catch (error) {
       return responseHandler.sendResponse(res, 400, { ...error });
     }
