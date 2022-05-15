@@ -9,8 +9,8 @@ export const SessionModel = (sequelize: Sequelize) => {
       },
       sessionId: {
         type: DataTypes.UUID,
-        primaryKey: true,
         allowNull: false,
+        primaryKey: true,
       },
       isActive: {
         type: DataTypes.BOOLEAN,
