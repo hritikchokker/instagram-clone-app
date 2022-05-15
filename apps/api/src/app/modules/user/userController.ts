@@ -4,9 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { ResponseHandler } from '../../utils/ResponseHandler';
 import { TokenManager } from '../../lib/TokenManager';
 import { HashManager } from '../../lib/HashManager';
+import { MailManager } from '../../lib/MailManager';
 const tokenService = new TokenManager();
 const hashManager = new HashManager();
 const responseHandler = new ResponseHandler();
+const mailManager = new MailManager();
 export class UserController {
   private getModel(sequeLizeInstance: Sequelize, modelName: string) {
     return sequeLizeInstance.models[modelName];
@@ -99,20 +101,20 @@ export class UserController {
           message: 'user with this email id does not exists',
         });
       }
-      const findActiveSession = await (
-        await sessionModel.findOne({
-          where: {
-            userId: previousDetails.uid,
-            // uid: previousDetails.userId,
-            isActive: true,
-          },
-        })
-      )?.toJSON();
-      if (findActiveSession) {
-        return responseHandler.sendResponse(res, 401, {
-          message: 'user already loggedin!',
-        });
-      }
+      // const findActiveSession = await (
+      //   await sessionModel.findOne({
+      //     where: {
+      //       userId: previousDetails.uid,
+      //       // uid: previousDetails.userId,
+      //       isActive: true,
+      //     },
+      //   })
+      // )?.toJSON();
+      // if (findActiveSession) {
+      //   return responseHandler.sendResponse(res, 401, {
+      //     message: 'user already loggedin!',
+      //   });
+      // }
       const passwordCheck = hashManager.decryptHashValue(
         payload.password,
         previousDetails.password
@@ -151,7 +153,48 @@ export class UserController {
     // const model = this.getModelFromInstance(req.sequelize);
   }
 
-  async forgotPassword(req: Request & { sequelize: Sequelize }, res: Response) {
+  async forgotPassword(
+    req: Request & { sequelize: { sequeLizeInstance: Sequelize } },
+    res: Response
+  ) {
+    try {
+      const { sequeLizeInstance } = req.sequelize;
+      if (!sequeLizeInstance) {
+        return responseHandler.sendResponse(res, 500, {
+          error: 'something went wrong',
+        });
+      }
+      const userModel = sequeLizeInstance.models.user;
+      const payload = req.body;
+
+      const previousDetails = await (
+        await userModel.findOne({
+          where: { email: payload.email },
+        })
+      )?.toJSON();
+      if (!previousDetails) {
+        return responseHandler.sendResponse(res, 400, {
+          message: 'user with this email id does not exists',
+        });
+      }
+      const token = await tokenService.createToken({
+        uid: previousDetails.uid,
+      });
+      await mailManager.sendMailViaSmtp({
+        email: previousDetails.email,
+        subject: 'Reset password link',
+        html: `<h1>find the link to reset your password 
+        <br> <br> <br>
+        <a href="http://localhost:4200/reset-password?token=${token}" target="_blank"> please click the link to reset your password</a> 
+        </h1>`,
+      });
+      return responseHandler.sendResponse(res, 200, {
+        message:
+          'mail is sent to the register email, please follow the link and reset your password',
+      });
+    } catch (error) {
+      return responseHandler.sendResponse(res, 400, { ...error });
+    }
     // const model = this.getModelFromInstance(req.sequelize);
   }
 
@@ -212,6 +255,52 @@ export class UserController {
           message: 'user is already logged out',
         });
       }
+    } catch (error) {
+      return responseHandler.sendResponse(res, 400, { ...error });
+    }
+  }
+  async resetPasswordHandler(
+    req: Request & { sequelize: { sequeLizeInstance: Sequelize } },
+    res: Response
+  ) {
+    try {
+      const { sequeLizeInstance } = req.sequelize;
+      if (!sequeLizeInstance) {
+        return responseHandler.sendResponse(res, 500, {
+          error: 'something went wrong',
+        });
+      }
+      const userModel = sequeLizeInstance.models.user;
+      const sessionModel = sequeLizeInstance.models.sessionHistory;
+      const payload = req.body;
+      const decodeToken: any = await tokenService.decodeToken(payload.token);
+      const userDetails = await (
+        await userModel.findOne({
+          where: {
+            uid: decodeToken.uid,
+          },
+        })
+      )?.toJSON();
+      if (!userDetails) {
+        return responseHandler.sendResponse(res, 400, {
+          message: 'No user found with these details',
+        });
+      }
+      const passHash = hashManager.createHashValue(payload.password);
+      userDetails.password = passHash;
+      await userModel.update(userDetails, {
+        where: {
+          uid: userDetails.uid,
+        },
+      });
+      await sessionModel.destroy({
+        where: {
+          userId: userDetails.uid,
+        },
+      });
+      return responseHandler.sendResponse(res, 200, {
+        message: 'password reset succesfully, please login again',
+      });
     } catch (error) {
       return responseHandler.sendResponse(res, 400, { ...error });
     }
