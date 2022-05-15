@@ -28,7 +28,7 @@ function Login() {
           </div>
           <div className="Login_base__container__Wrapper__signUp">
             <div>
-              Don't have an account? <span>Sign up</span>
+              Don't have an account? <a href="/Register">Sign up</a>
             </div>
           </div>
         </div>
