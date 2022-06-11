@@ -1,8 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { registerActions } from './RegisterActions';
+import { useNavigate } from 'react-router';
 
 function Register() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // const token = useSelector((state) => console.log(state));
+  const token = useSelector((state) => state.Register.token);
+
+  useEffect(() => {
+    if (token) {
+      navigate('/MainBody');
+    }
+  }, [navigate, token]);
+
   return (
     <>
       <Formik
@@ -14,8 +28,9 @@ function Register() {
         }}
         validationSchema={SignupSchema}
         onSubmit={(values) => {
-          // same shape as initial values
+          // same as initial values
           console.log(values);
+          dispatch(registerActions.register(values));
         }}
       >
         {({ values, errors, touched, handleChange, handleSubmit }) => (
